@@ -504,26 +504,31 @@ body {
 </div>
 
 <script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
-let userData = {
+let userData = null;
 
-name: "JSV",
+fetch("data.json")
+.then(res => res.json())
+.then(cards => {
 
-phone: "8209152372",
+  userData = cards[id];
 
-whatsapp: "9001355548",
+  if(!userData){
+    document.getElementById("name").innerText = "User Not Found";
+    return;
+  }
 
-location: "https://www.google.com/maps?q=Malviya+Nagar+Industrial+Area+Malviya+Nagar+Jaipur+Rajasthan+302017",
-
-scans: 0
-
-};
   document.getElementById("name").innerText = userData.name;
-document.getElementById("avatarInitial").innerText = userData.name.charAt(0).toUpperCase();
-document.getElementById("scanText").innerText = "Scans: " + userData.scans;
+  document.getElementById("avatarInitial").innerText = userData.name.charAt(0).toUpperCase();
+  document.getElementById("scanText").innerText = "Scans: " + (userData.scans || 0);
+
+});
 
 
 /* ── Flip interaction ── */
+
 const scene   = document.getElementById("scene");
 const flipper = document.getElementById("flipper");
 const dot0    = document.getElementById("dot0");
@@ -532,76 +537,80 @@ const dot1    = document.getElementById("dot1");
 let isFlipped  = false;
 let isDragging = false;
 let startX     = 0;
-let liveRot    = 0;
 
-function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+function getX(e){
+  return e.touches ? e.touches[0].clientX : e.clientX;
+}
 
-function onStart(e) {
+function onStart(e){
   if (e.target.closest('.btn, a, button')) return;
+
   isDragging = true;
   startX = getX(e);
-  liveRot = isFlipped ? 180 : 0;
   flipper.style.transition = 'none';
 }
 
-function onMove(e) {
-  if (!isDragging) return;
+function onMove(e){
+  if(!isDragging) return;
+
   const dx = getX(e) - startX;
-  const delta = -(dx / scene.offsetWidth) * 200;
-  const base  = isFlipped ? 180 : 0;
-  let rot = base + delta;
-  rot = Math.max(isFlipped ? 80 : -100, Math.min(isFlipped ? 280 : 100, rot));
+  const rot = -(dx / scene.offsetWidth) * 200;
+
   flipper.style.transform = `rotateY(${rot}deg)`;
-  liveRot = rot;
 }
 
-function onEnd(e) {
-  if (!isDragging) return;
+function onEnd(e){
+  if(!isDragging) return;
+
   isDragging = false;
 
   const dx = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - startX;
-  const swipedDeg = -(dx / scene.offsetWidth) * 200;
 
-  if (!isFlipped && swipedDeg > 55)  isFlipped = true;
-  if ( isFlipped && swipedDeg < -55) isFlipped = false;
+  if(dx < -80) isFlipped = true;
+  if(dx > 80) isFlipped = false;
 
-  flipper.style.transition = 'transform 0.58s cubic-bezier(0.22,1,0.36,1)';
-  flipper.style.transform  = `rotateY(${isFlipped ? 180 : 0}deg)`;
-  updateDots();
+  flipper.style.transition = "transform 0.5s";
+  flipper.style.transform = `rotateY(${isFlipped ? 180 : 0}deg)`;
+
+  dot0.classList.toggle("active", !isFlipped);
+  dot1.classList.toggle("active", isFlipped);
 }
 
-function updateDots() {
-  dot0.classList.toggle('active', !isFlipped);
-  dot1.classList.toggle('active',  isFlipped);
-}
+scene.addEventListener("mousedown", onStart);
+scene.addEventListener("touchstart", onStart);
 
-scene.addEventListener('mousedown',  onStart);
-scene.addEventListener('touchstart', onStart, { passive: true });
-window.addEventListener('mousemove',  onMove);
-window.addEventListener('touchmove',  onMove, { passive: false });
-window.addEventListener('mouseup',    onEnd);
-window.addEventListener('touchend',   onEnd);
+window.addEventListener("mousemove", onMove);
+window.addEventListener("touchmove", onMove);
+
+window.addEventListener("mouseup", onEnd);
+window.addEventListener("touchend", onEnd);
+
 
 
 /* ── Contact actions ── */
 
-function callUser() {
-  if (userData.phone)
+function callUser(){
+  if(userData && userData.phone){
     location.href = "tel:" + userData.phone;
+  }
 }
 
-function whatsappUser() {
-  if (userData.whatsapp)
+function whatsappUser(){
+  if(userData && userData.whatsapp){
     window.open("https://wa.me/" + userData.whatsapp);
+  }
 }
 
 function openLocation(){
-  if(userData.location){
+  if(userData && userData.location){
     window.open(userData.location, "_blank");
   }
 }
 
-function saveContact() {
+function saveContact(){
+
+  if(!userData) return;
+
   const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${userData.name}
@@ -609,7 +618,7 @@ TEL:${userData.phone}
 URL:${userData.website}
 END:VCARD`;
 
-  const blob = new Blob([vcard], { type: "text/vcard" });
+  const blob = new Blob([vcard], {type:"text/vcard"});
   const a = document.createElement("a");
 
   a.href = URL.createObjectURL(blob);
@@ -617,27 +626,32 @@ END:VCARD`;
   a.click();
 }
 
-function openWebsiteModal() {
+
+function openWebsiteModal(){
+  if(!userData) return;
+
   document.getElementById("websiteLink").href = userData.website || "#";
   document.getElementById("websiteModal").classList.add("open");
 }
 
-function closeModal() {
+function closeModal(){
   document.getElementById("websiteModal").classList.remove("open");
 }
 
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById("websiteModal")) closeModal();
+function handleOverlayClick(e){
+  if(e.target === document.getElementById("websiteModal")){
+    closeModal();
+  }
 }
 
-function rate(n) {
-  document.querySelectorAll(".star").forEach((s,i) =>
-    s.classList.toggle("selected", i < n)
-  );
+function rate(n){
+  document.querySelectorAll(".star").forEach((s,i)=>{
+    s.classList.toggle("selected", i < n);
+  });
+
   document.getElementById("starFeedback").innerText =
-    ["","Poor 😞","Fair 😐","Good 🙂","Great 😊","Excellent 🌟"][n];
+  ["","Poor 😞","Fair 😐","Good 🙂","Great 😊","Excellent 🌟"][n];
 }
-
 </script>
 </body>
 </html>
