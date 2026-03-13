@@ -1,0 +1,15 @@
+{
+ "101":{
+  "name":"JSV",
+  "phone":"8209152372",
+  "whatsapp":"9001355548",
+  "location":"https://maps.google.com/?q=Jaipur"
+ },
+
+ "102":{
+  "name":"Rahul",
+  "phone":"9999999999",
+  "whatsapp":"9999999999",
+  "location":"https://maps.google.com/?q=Delhi"
+ }
+}
