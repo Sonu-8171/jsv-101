@@ -376,19 +376,27 @@ body {
         <div class="scan-badge" id="scanText">Scans: 0</div>
       </div>
       <div class="divider"></div>
-      <div class="buttons">
-        <button class="btn btn-call"  onclick="callUser()">
-          <div class="btn-icon">📞</div><span class="btn-label">Call</span><span class="btn-arrow">›</span>
-        </button>
-        <button class="btn btn-wp" onclick="whatsappUser()">
-          <div class="btn-icon">💬</div><span class="btn-label">WhatsApp</span><span class="btn-arrow">›</span>
-        
-       
-        <button class="btn btn-loc" onclick="openLocation()">
-          <div class="btn-icon">📍</div><span class="btn-label">Location</span><span class="btn-arrow">›</span>
-        </button>
-        
-      </div>
+<div class="buttons">
+
+  <button class="btn btn-call" onclick="callUser()">
+    <div class="btn-icon">📞</div>
+    <span class="btn-label">Call</span>
+    <span class="btn-arrow">›</span>
+  </button>
+
+  <button class="btn btn-wp" onclick="whatsappUser()">
+    <div class="btn-icon">💬</div>
+    <span class="btn-label">WhatsApp</span>
+    <span class="btn-arrow">›</span>
+  </button>
+
+  <button class="btn btn-loc" onclick="openLocation()">
+    <div class="btn-icon">📍</div>
+    <span class="btn-label">Location</span>
+    <span class="btn-arrow">›</span>
+  </button>
+
+</div>
       <div class="front-footer">Powered by <span>VASUKI NFC</span></div>
     </div>
 
@@ -498,21 +506,23 @@ body {
 <script>
 
 let userData = {
-name: "JSV",
 
-phone: "8209152372",     // CALL NUMBER
+name: "kalpit Gupta",
 
-whatsapp: "9001355548", // WHATSAPP NUMBER
+phone: "9772160157",
 
+whatsapp: "919772160157",
 
+instagram: "_vasuki_99",
 
+website: "https://comingsoon.com",
 
-
-location: "Malviya Nagar Industrial Area, Malviya Nagar, Jaipur, Rajasthan 302017",
+location: "https://www.google.com/maps?q=Malviya+Nagar+Industrial+Area+Malviya+Nagar+Jaipur+Rajasthan+302017",
 
 scans: 0
+
 };
-document.getElementById("name").innerText = userData.name;
+  document.getElementById("name").innerText = userData.name;
 document.getElementById("avatarInitial").innerText = userData.name.charAt(0).toUpperCase();
 document.getElementById("scanText").innerText = "Scans: " + userData.scans;
 
@@ -589,14 +599,10 @@ function whatsappUser() {
     window.open("https://wa.me/" + userData.whatsapp);
 }
 
-
-
-function openLocation() {
-  if (userData.location)
-    window.open(
-      "Malviya Nagar Industrial Area, Malviya Nagar, Jaipur, Rajasthan 302017" +
-      encodeURIComponent(userData.location)
-    );
+function openLocation(){
+  if(userData.location){
+    window.open(userData.location, "_blank");
+  }
 }
 
 function saveContact() {
@@ -639,5 +645,6 @@ function rate(n) {
 </script>
 </body>
 </html>
+
 
 
